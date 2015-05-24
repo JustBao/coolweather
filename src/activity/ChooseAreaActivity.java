@@ -37,6 +37,12 @@ public class ChooseAreaActivity extends Activity {
 	private static final int LEVEL_CITY=1;
 	private static final int LEVEL_COUNTY=2;
 	
+	/**
+	 * 是否从weatherActivity中跳转过来
+	 */
+	private boolean isFromWeather;
+	
+	
 	private ProgressDialog progressDialog;
 	private CoolWeatherDB coolWeatherDB;
 	private TextView titleView;
@@ -63,12 +69,15 @@ public class ChooseAreaActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		
-		
+		isFromWeather=getIntent().getBooleanExtra("from_weather_activity",false);
 		SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(this);
-		if(prefs.getBoolean("city_selected", false)){
+		//已经选了城市并且不是从weatherActivity跳转过来，才会直接跳转到weatherActivity
+		if(prefs.getBoolean("city_selected", false)&&!isFromWeather){
 			Intent intent=new Intent(this,WeatherActivity.class);
 			startActivity(intent);
 			finish();
@@ -263,6 +272,10 @@ public class ChooseAreaActivity extends Activity {
 		}else if(currentLevel==LEVEL_CITY){
 			queryProvinces();
 		}else {
+			if(isFromWeather){
+				Intent intent=new Intent(this,WeatherActivity.class);
+				startActivity(intent);
+			}
 			finish();
 		}
 	}
